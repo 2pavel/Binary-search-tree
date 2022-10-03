@@ -21,6 +21,7 @@ class BST:
         self.root_node = self.array_to_bst()
 
     def find_root_node(self):
+        """Returns BST's root node"""
         print(self.init_array)
         root_index = self.find_midpoint()
 
@@ -30,6 +31,7 @@ class BST:
         return floor(len(self.init_array) / 2)
 
     def array_to_bst(self, left=0, right=None):
+        """Converts sorted array to Binary Search Tree"""
         if right is None:
             right = len(self.init_array) - 1
 
@@ -45,7 +47,7 @@ class BST:
         return value
 
     def insert(self, value, node='root'):
-        """inserts new value as a leaf node"""
+        """Inserts new value as a leaf node"""
         if node == 'root':
             node = self.root_node
         if self.look_for(value):
@@ -64,6 +66,7 @@ class BST:
                 node.left = Node(value)
 
     def delete(self, value):
+        """Checks node's children and calls for appropriate deletion method"""
         node_to_delete = self.look_for(value)
         if not node_to_delete:
             return
@@ -77,7 +80,7 @@ class BST:
             self.delete_leaf_node(value)
 
     def look_for(self, value, node='root'):
-        """returns a node with matching value"""
+        """Returns a node with matching value"""
         if not node:
             return
 
@@ -93,7 +96,7 @@ class BST:
             return self.look_for(value, node.left)
 
     def find_parent_node(self, value, node='root'):
-        """returns a parent of a node with provided value"""
+        """Returns a parent of a node with provided value"""
         if node == 'root':
             node = self.root_node
 
@@ -109,18 +112,20 @@ class BST:
                 return self.find_parent_node(value, node.left)
 
     def delete_two_children_node(self, value):
+        """Swaps value of a matching node with next biggest value (also deletes next biggest)"""
         node = self.look_for(value)
         next_biggest = self.find_next_biggest(node)
         self.delete(next_biggest.value)
         node.value = next_biggest.value
 
     def find_next_biggest(self, node):
-        """returns node with next biggest value (right once, then left as much as possible)"""
+        """Returns node with next biggest value (right once, then left as much as possible)"""
         if node.right:
             node = node.right
             return self.get_leftmost_node(node)
 
     def get_leftmost_node(self, node):
+        """Takes a node and returns its leftmost child node"""
         if node.left:
             node = node.left
         else:
@@ -129,13 +134,12 @@ class BST:
         return self.get_leftmost_node(node)
 
     def delete_leaf_node(self, value):
-        """find parent node and change pointer to None, return if child node has a child"""
+        """Find parent node and change pointer to None, return if child node is not a leaf"""
         parent_node = self.find_parent_node(value)
         if not parent_node:
             return
 
         child_node = self.get_child_node(parent_node, value)
-
         if child_node.left or child_node.right:
             return
 
@@ -147,9 +151,11 @@ class BST:
                 parent_node.left = None
 
     def delete_single_child_node(self, value):
+        """"Takes a value, finds its parent and points it to the only child node"""
         parent_node = self.find_parent_node(value)
         if not parent_node:
             return
+
         pointer = self.get_child_node_pointer(parent_node, value)
         node = self.get_child_node(parent_node, value)
         self.change_pointer(parent_node, node, pointer)
@@ -169,6 +175,7 @@ class BST:
                     parent_node.right = node.right
 
     def get_child_node_pointer(self, parent_node, value):
+        """Takes a parent node and a value, returns a string determining if child is left or right node"""
         if parent_node.left:
             if parent_node.left.value == value:
                 return 'left'
@@ -179,6 +186,7 @@ class BST:
             return
 
     def get_child_node(self, parent_node, value):
+        """Takes a parent node and a value, returns the child node if found"""
         if parent_node.left:
             if parent_node.left.value == value:
                 return parent_node.left
@@ -196,7 +204,7 @@ class BST:
         return children
 
     def check_child_nodes(self, value, node):
-        """returns a node with matching value or None"""
+        """returns a child node with matching value or None"""
         if node.left:
             if node.left.value == value:
                 return node
@@ -205,9 +213,8 @@ class BST:
                 return node
         return
 
-    # ANALYZE RECURSIVE CALLS HERE AGAIN
-    ####################################################
     def max_depth(self, node='root'):
+        """Returns BST's depth. Counts from 1. Can be used with any node to check depth of a subtree"""
         if node == 'root':
             node = self.root_node
         if not node:
@@ -216,9 +223,9 @@ class BST:
         depth_left = self.max_depth(node.left)
         depth_right = self.max_depth(node.right)
         return max(depth_left, depth_right) + 1
-    ####################################################
 
     def is_balanced(self, node='root'):
+        """Compares depth of left and right subtrees, returns True if it is <= 1"""
         if node == 'root':
             node = self.root_node
         if not node:
@@ -247,13 +254,16 @@ class BST:
         return array
 
     def rebalance(self):
+        """If BST is not balanced, converts it to an array and builds a BST again"""
         if self.is_balanced():
             print('BST is already balanced.')
             return
+
         self.init_array = self.to_array()
         self.root_node = self.array_to_bst()
 
     def print_tree(self, node='root', prefix='', is_left=True):
+        """Prints the tree using inorder traversal starting from right side (biggest value on top)"""
         if node == 'root':
             node = self.root_node
         if node:
@@ -311,5 +321,3 @@ try:
         tree.print_tree()
 except ValueError:
     print('Bye!')
-
-# TODO: analyze that pesky recursion at line 202
